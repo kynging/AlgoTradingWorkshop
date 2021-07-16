@@ -1,9 +1,9 @@
 baseURL = "http://gotoaws.cloudguru.run/"
 ignoreFiles = [ "\\.files/README.md$",  ]
-languageCode = "en-us"
-defaultContentLanguage = "en"
-title = "Intro To Analytics On AWS workshop"
-theme = "hugo-theme-learn"
+languageCode = "zh_cn"
+defaultContentLanguage = "zh_cn"
+title = "Algo Trading Workshop"
+theme = "learn"
 uglyurls = false
 sectionPagesMenu = "main"
 relativeURLs = true
@@ -41,3 +41,9 @@ weight = 40
 [outputs]
 home = [ "HTML", "JSON"]
 page = [ "HTML" ]
+
+[Languages]
+[Languages.zh_cn]
+title = "算法交易 Workshop"
+weight = 1
+languageName = "中文"
