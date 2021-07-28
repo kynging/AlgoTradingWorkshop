@@ -4,6 +4,10 @@ chapter: false
 weight: 3
 ---
 
+{{% notice note %}}
+本实验建议在 us-east-1 区域进行。
+{{% /notice  %}}
+
 在这个部分，我们将展示如何使用 SageMaker 进行机器学习，以及一些基于机器学习的示例策略：
 - 介绍 SageMaker 平台
 - 介绍 BYOC 的使用方式和如何 host 一个训练好的模型
