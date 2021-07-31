@@ -349,6 +349,7 @@ Resources:
           Version: '2012-10-17'
         PolicyName: SageMakerExecutionPolicy
       RoleName: SageMakerExecutionRole
+      
   SagemakerNotebook:
     Type: AWS::SageMaker::NotebookInstance
     Properties:
@@ -358,6 +359,40 @@ Resources:
         - SageMakerExecutionRole
         - Arn
       NotebookInstanceName: AlgoTradingWorkshop
+      
+  ecsTaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com 
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+      - Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+          
+  ecsTaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Action: sts:AssumeRole
+          Effect: Allow
+          Principal:
+            Service: ecs-tasks.amazonaws.com 
+        Version: '2012-10-17'
+      ManagedPolicyArns:
+      - Fn::Join:
+        - ''
+        - - 'arn:'
+          - Ref: AWS::Partition
+          - ":iam::aws:policy/AmazonS3FullAccess"
 
 Outputs:
   VPC:
