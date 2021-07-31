@@ -376,6 +376,7 @@ Resources:
         - - 'arn:'
           - Ref: AWS::Partition
           - ":iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+      RoleName: ecsTaskExecutionRole
           
   ecsTaskRole:
     Type: AWS::IAM::Role
@@ -393,6 +394,7 @@ Resources:
         - - 'arn:'
           - Ref: AWS::Partition
           - ":iam::aws:policy/AmazonS3FullAccess"
+      RoleName: ecsTaskRole
 
 Outputs:
   VPC:
