@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>1. 从零构建量化平台 on 算法交易 Workshop</title>
+    <link>https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/</link>
+    <description>Recent content in 1. 从零构建量化平台 on 算法交易 Workshop</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh_cn</language><atom:link href="https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>1.1 快速创建金融数据湖</title>
+      <link>https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.1.quickstart_datalake/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.1.quickstart_datalake/</guid>
+      <description>快速创建金融数据湖 本实验建议在 us-east-1 区域进行。
+（此处应有架构图）
+在开始之前，在 Notebook 中执行以下代码拷贝数据表：
+my_name = &#39;xxx&#39;aws_region = &#39;us-east-1&#39;bucket = &#39;algo-trading-workshop-{}&#39;.format(my_name)table = &#39;stock_day&#39;database = &#39;stock-data&#39;!aws s3 cp s3://stock-public-data/{table}.csv s3://{bucket}/raw/{table}.csv --request-payer requester --region {aws_region}这个部分介绍如何使用 Glue 和 Athena 来快速进行数据 ELT
+通过 Glue 控制台创建 Glue 爬虫以及 ETL 任务（选项一）
+ 通过 Glue 控制台创建 Glue 爬虫   创建AWS Glue Crawler，在AWS Glue下选择Crawlers， Add crawler   填写Crwaler name   Crawler type resource选择Data Stores，Crawler all folders   Data store选择s3，Crawl data路径选择my account，include path选择之前拷贝stock_day对应的s3路径   不需添加另外的data store   创建一个IAM role，填上自己的名字。稍后修改IAM Role关联的策略   选择按需执行   添加一个database   命名为stock-data   可以看到Database下已经选中stock-data，下一步   预览下之前的配置   在AWS Console选择IAM，选中Role，搜索刚才命名的Role name，点击AWSGlueServiceRole-xxx   可以看到这个Role name下已经关联了AWSGlueServiceRole，点击Attach polices   找到AmazonS3FullAccess，并Attach policy   可以看到Attach policy下已经做了访问s3策略的关联   回到AWS Glue页面，选择Crawlers，选中刚才创建的AnalyticsworkshopCrawler，点击Run crawler   可以看到作业已经完成，并创stock-data建创了一个表   可以在Database下Tables中查看该表，单击stock_day_csv   可以看到表的Schema  2.</description>
+    </item>
+    
+    <item>
+      <title>1.2 BackTrader 入门</title>
+      <link>https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.2.backtrader_intro/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.2.backtrader_intro/</guid>
+      <description>BackTrader 入门 本实验建议在 us-east-1 区域进行。
+BackTrader 简介 基于 Python 的量化回测框架有很多，包括开源的 zipline、vnpy、pyalgotrader 和 backtrader等，国内也有众多商业化的回测软件。Backtrader，因为它功能十分完善，有完整的使用文档，可以参考https://www.backtrader.com/docu/。BackTrader 的优点包括：
+ 安装相对简单（直接pip安装即可） 运行速度快，支持基于 pandas 的矢量运算 内置了 talib 股票分析技术指标库 支持多品种、多策略、多周期的回测和交易 支持 pyflio、empyrica 分析模块库 支持 alphalens 多因子分析模块库等 扩展灵活，方便进行容器化部署 可以集成 TensorFlow、PyTorch 等机器学习框架使用  运行 BackTrader 示例策略 我们在这里将展示一个 BackTrader 回测任务的示例代码。这个代码构建了一个简单双均线策略，并且使用某支自定义股票的历史日线数据进行回测。
+ 下载本实验使用的 Notebook 代码：1.2.backtrader_intro.ipynb 回到 SageMaker Notebook 界面，点击 Upload Files 按钮：  将上一步下载的 Notebook 代码上传并打开 点击右上角的 kernel 选项：  选择 conda_python3  运行 Notebook 开始实验  实验完成后，应该可以看到和 BackTrader 简介 环节所示的图相似的回测效果。其中：</description>
+    </item>
+    
+    <item>
+      <title>1.3 使用 ECS 批量运行任务</title>
+      <link>https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.3.ecs_gridsearch/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.3.ecs_gridsearch/</guid>
+      <description>使用 ECS 批量运行 Python 任务 本实验建议在 us-east-1 区域进行。
+在 Python 中，全局解释器锁（GIL）使得多线程无法并行执行。与 C 和 Java 等语言不同，Python 的多线程很难高效将多个线程映射到多个 CPU 上执行。虽然 Python 提供了 multiprocessing 等多进程的支持，但这在代码实现上较为繁琐，而且在效率和可扩展性上无法与使用容器技术相比。
+运行基于 Python 的高性能计算任务的推荐方式是将任务拆分成并行任务。容器提供标准化的运行环境，并且具有高资源利用率与隔离性的优点，并且不需要对现有代码进行大量改造。
+例如，在量化研究中经常遇到需要对超参进行优化的问题，不同的超参可能会对策略的表现有决定性的影响。对超参优化简单粗暴的处理方式就是进行网格搜索（grid search），这尤其适用于一些超参组合不多的场景。在下面的示例中，我们将展示如何通过容器技术，在 AWS ECS 服务中大量进行并行的网格搜索。
+搭建 ECS 示例程序 在这个环节，我们会先在 ECS 上搭建一个示例应用。如果您之前对 Docker 并不是很熟悉，这个环节可以帮助您快速掌握容器技术的一些基础知识。
+上传 Notebook 代码   下载此环节使用的 Notebook 代码到本地：1.3.1.ecs_sample_app.ipynb
+  回到 JupyterLab 界面，点击左上角的上传按钮：   选择刚刚下载的 1.3.1.ecs_samle_app.ipynb 文件并上传。上传成功后打开 Notebook：   接下来逐个 cell 执行 Notebook 代码就可以了。您可能注意到代码中主要使用 Boto3（AWS Python SDK）进行了如下操作：
+参数定义  这里主要需要将 my_name 修改为您定义的参数名称：  aws_account_id = boto3.</description>
+    </item>
+    
+    <item>
+      <title>1.4 使用 SageMaker 运行超参优化</title>
+      <link>https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.4.sagemaker_hpo/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.4.sagemaker_hpo/</guid>
+      <description>使用 SageMaker 运行超参优化 本实验建议在 us-east-1 区域进行。
+这个部分将介绍如何通过 SageMaker HPO 功能在更少的 trial 中找到最优参数组合
+（此处应有架构图）
+下载本实验使用的 Notebook 代码：1.4.sagemaker_hpo.ipynb</description>
+    </item>
+    
+  </channel>
+</rss>
