@@ -1,0 +1,127 @@
+[
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/",
+	"title": "0. 准备工作",
+	"tags": [],
+	"description": "",
+	"content": "\r本实验建议在 us-east-1 区域进行。\n\r在这个部分，我们将创建实验必须的资源。这包括：\n 通过 CloudFormation 模板创建 VPC 和 IAM 角色， 以及 SageMaker Notebook 通过控制台创建 S3 和 ECS Fargate 集群 通过 AWS SDK 快速创建 S3 和 ECS（可选）  （此处应有架构图）\n"
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.1.vpc_sagemaker_basics/",
+	"title": "0.1 部署云端基础环境",
+	"tags": [],
+	"description": "",
+	"content": "部署云端基础环境 本实验建议在 us-east-1 区域进行。\n\r在这个环节中，我们将通过预先准备好的 CloudFormation 模板创建实验的基础网络环境和实验资源。AWS CloudFormation 是一种“基础设施即代码”，提供一种简单的方式，对一系列 AWS 资源进行建模，快速而又一致地对这些资源进行预置。\n请通过以下链接下载本实验使用的 CloudFormation 模板至本地环境：template.yaml。这个模板里面主要包含了 VPC、SageMaker Notebook。CloudFormation 包含的详细内容包括：\n 创建跨三个不同的 AZ 的 VPC 创建的 VPC 在每个 AZ 都包含 public、private、isolated 三个子网 公有（public）子网：  该子网内的资源会暴露在互联网上，可被用户或客户端直接访问。通常用于部署 NAT Gateway, 堡垒机，ELB 负载均衡器等；   私有子网：  该子网内的资源不能被用户或客户端直接访问，但可以通过 NAT Gateway 单向访问公网。通常用于部署业务服务器、容器集群、大数据集群等；   数据库子网：  该子网内的资源不能被用户或客户端直接访问，也不能访问公网。通常仅用于部署对安全要求最高的数据库等。   SageMaker Notebook 实例 用于 SageMaker Notebook 和其他托管服务使用的 IAM 角色  实验步骤 首先，导航到 CloudFormation 控制台，部署刚刚下载的模板：\n  通过此链接直接导航到 CloudFormation 控制台创建新堆栈的界面：https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create/template\n  选择上传模板文件，然后点击选择文件，选择上一步中下载的模板   上传完成后点击下一步\n  在下一步中，列出了模板所需的参数。在 Stack name 选项中填入 AlgoTradingWorkshop，其他参数保持默认，然后点击下一步：   直接点击下一步到最终的审核步骤\n  下滑到最下方，勾选我确认，AWS CloudFormation 可能创建具有自定义名称的 IAM 资源，然后点击右下方的创建堆栈按钮：   堆栈需要等待一段时间才能创建成功。成功后可以看到堆栈变成 UPDATE_COMPLETE 状态。这时可以点开堆栈的 Outputs 页面查看堆栈创建的各类 AWS 资源 id： 接下来我们可以在控制台中简单确认这个 CloudFormation 模板中创建的资源：\nVPC Amazon Virtual Private Cloud（VPC）允许您在 Amazon Web Services 云中预置一个逻辑隔离分区，并在虚拟网络中启动亚马逊云科技资源。在 VPC 中，您可以完全掌控您的虚拟联网环境。 VPC 类似于传统网络，包括以下概念：\n CIDR 段：用于 IP 地址分配 子网：从 CIDR 段中划出的 VPC 中可用的一系列 IP 地址范围 路由表：一组称为路由的规则，规定将网络流量定向到何处 网关：VPC 中资源和互联网之间的网关 安全组：动态的网络访问控制规则  您可以导航到 VPC 控制台点击细项查看详细的网络配置：https://console.aws.amazon.com/vpc/home?region=us-east-1 SageMaker Notebook 实例 Amazon SageMaker Notebook 实例是一个机器学习 (ML) 计算实例，运行 Jupyter Notebook 应用程序。Jupyter Notebook 提供一种网页形式的简单 IDE，可以在网页中交互式地编写代码和运行代码，直接返回逐段代码的运行结果。同时 Notebook 中还可以穿插必要的说明文档和图片，便于对代码进行说明和解释。SageMaker Notebook 实例还提供了多种内核，便于进行机器学习开发。详情可以参考：https://docs.aws.amazon.com/zh_cn/sagemaker/latest/dg/nbi.html\n您可以导航到 SageMaker 控制台确认 CloudFormation 创建好的 SageMaker Notebook 实例：https://us-east-1.console.aws.amazon.com/sagemaker/home?region=us-east-1#/notebook-instances。点击右侧的 Open JupyterLab 按钮就可以直接跳转到 Jupyter Notebook的使用界面： "
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.1.quickstart_datalake/",
+	"title": "1.1 快速创建金融数据湖",
+	"tags": [],
+	"description": "",
+	"content": "快速创建金融数据湖 本实验建议在 us-east-1 区域进行。\n\r（此处应有架构图）\n在开始之前，在 Notebook 中执行以下代码拷贝数据表：\nmy_name = 'xxx'\raws_region = 'us-east-1'\rbucket = 'algo-trading-workshop-{}'.format(my_name)\rtable = 'stock_day'\rdatabase = 'stock-data'\r!aws s3 cp s3://stock-public-data/{table}.csv s3://{bucket}/raw/{table}.csv --request-payer requester --region {aws_region}\r这个部分介绍如何使用 Glue 和 Athena 来快速进行数据 ELT\n通过 Glue 控制台创建 Glue 爬虫以及 ETL 任务（选项一）\n 通过 Glue 控制台创建 Glue 爬虫   创建AWS Glue Crawler，在AWS Glue下选择Crawlers， Add crawler   填写Crwaler name   Crawler type resource选择Data Stores，Crawler all folders   Data store选择s3，Crawl data路径选择my account，include path选择之前拷贝stock_day对应的s3路径   不需添加另外的data store   创建一个IAM role，填上自己的名字。稍后修改IAM Role关联的策略   选择按需执行   添加一个database   命名为stock-data   可以看到Database下已经选中stock-data，下一步   预览下之前的配置   在AWS Console选择IAM，选中Role，搜索刚才命名的Role name，点击AWSGlueServiceRole-xxx   可以看到这个Role name下已经关联了AWSGlueServiceRole，点击Attach polices   找到AmazonS3FullAccess，并Attach policy   可以看到Attach policy下已经做了访问s3策略的关联   回到AWS Glue页面，选择Crawlers，选中刚才创建的AnalyticsworkshopCrawler，点击Run crawler   可以看到作业已经完成，并创stock-data建创了一个表   可以在Database下Tables中查看该表，单击stock_day_csv   可以看到表的Schema  2. 通过 Glue 控制台创建 ETL 任务\n 在AWS Glue下点击Jobs，选择Add job   Name下填写transform，IAM Role选择之前创建的AdAWSGlueServiceRole-xxx；Glue version选择Spark 2.4 （Glue version 2.0）   选择data source为stock_day_csv   选择一个transform type，为Change Schema   data target选择源为s3，format为parquet，target path为新建的s3://algo-trading-workshop-xxx/parquet目录   可以看到源和目标的数据类型，此处不做修改   此处为Glue job自动生成的脚本，不做修改，Run job   参数不做修改，直接Run job   回到AWS Glue下job界面，选择刚才运行的Glue job，可以看到作业已经在运行   直到作业运行完成，可以看到执行的时间和状态，在s3://algo-trading-workshop-xxx/parquet下查看刚才转换完成的数据集  通过 Athena 控制台直接建表并进行 ETL（选项二）\n 使用Athena前，必须设置查询结果的地址，如图示，在s3下新建一个目录。在Athena右上方点击Settings，并选中这个路径   创建外部表的SQL语句  CREATE EXTERNAL TABLE IF NOT EXISTS stock_day_raw (\rticker string,\rsecID string,\rtradeDate string,\ropenPrice double,\rhighestPrice double,\rlowestPrice double,\rclosePrice double,\rturnoverVol double,\rturnoverValue double,\raccumAdjFactor double,\risOpen boolean\r)\rROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'\rLOCATION 's3://algo-trading-workshop-xxx/raw'\rTBLPROPERTIES ('skip.header.line.count'='1');\r 输入上方SQL语句，Run query，可以看到左侧新生成的stock_day_raw   从已有表创建外部表的SQL语句  CREATE EXTERNAL TABLE IF NOT EXISTS stock_day (\rticker string,\rsecID string,\rtradedate string,\ropenPrice double,\rhighestPrice double,\rlowestPrice double,\rclosePrice double,\rturnoverVol double,\rturnoverValue double,\raccumAdjFactor double,\risOpen boolean\r)\rSTORED AS parquet\rLOCATION 's3://algo-trading-workshop-xxx/parquet'\r 输入上方SQL语句，Run query，可以看到左侧新生成的stock_day   查询表的字段  INSERT INTO stock_day\rSELECT *\rFROM stock_day_raw;\r使用 Glue DataBrew 进行操作（选项三，可选）\n 在AWS Console中搜索databrew，打开AWS Glue DataBrew，create project   输入Project name为GlueDataBrew；选择New dataset；Dataset name为raw-dataset   左侧导航栏选择All AWS Glue tables，并在右侧选择之前创建的Database\u0026ndash;\u0026gt;stock-data   点击stock-data   创建IAM Role，输入命名前缀GlueDataBrew   初始化会话   创建Glue DataBrew会话后，可以看到下面的图例：   单击屏幕右上角的SCHEMA选项，浏览表架构及其属性，例如列名、数据类型、数据质量、值分布   单击GRID选项返回到网格视图，可以更改secID数据类型，通过单击secID列中的#，并选择字符串类型，如下面的图示：  "
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/2.machinelearning/2.1.sagemaker_example/",
+	"title": "2.1 使用 SageMaker 进行模型训练和部署",
+	"tags": [],
+	"description": "",
+	"content": "使用 SageMaker 进行模型训练和部署 本实验建议在 us-east-1 区域进行。\n\r在这个部分，我们会介绍如何通过深度学习模型进行时间序列预测。时间序列分析和预测是一个在现代科学中非常具有挑战的领域。在使用历史数据进行预测的时候，如果我们能事先知道影响未来状态的所有因素，就能够通过回归算法快速找到未来与这些影响因素之间的关系。但现实情况中，我们往往无法事先知道股价的所有影响因素。因此在预测问题中，往往使用一些与市场行情相关的银子，比如指数的表现、同行业其他股票的表现、市场情绪等因子。深度学习算法可以寻找这些因子之间的关联性，并且具有 LSTM 的模型可以识别一些股价的历史规律和周期性变化，更好地对未来状态进行预测。\n通常来讲，像 ARIMA (Autoregressive Integrated moving average) 之类的传统算法往往并不能在股价预测的场景取得很好的效果，而使用 RNN （循环神经网络）类深度学习算法会比传统的回归模型具有更好的效果。在这个环节中我们将专注于如何使用 SageMaker 进行模型的训练和部署。\n这里将提供时序预测的示例代码，展示如何部署自定义模型，以及使用托管的 DeepAR 算法\n（此处应有架构图）\n使用自定义模型和容器镜像 下载本实验使用的 Notebook 代码：2.1.1.sagemaker_custom_rnn.ipynb\n这里需要把这个压缩包中的代码解压到 custom_rnn/ 路径下：2.1.1.sagemaker_custom_rnn.zip\n使用 AWS 提供的 DeepAR 算法 下载本实验使用的 Notebook 代码：2.1.2.sagemaker_deepar.ipynb\n"
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.2.aws_console/",
+	"title": "0.2 通过 AWS 控制台创建 S3 存储桶和 ECS 集群（选项一）",
+	"tags": [],
+	"description": "",
+	"content": "通过 AWS 控制台创建 S3 存储桶和 ECS 集群 本实验建议在 us-east-1 区域进行。\n\r在这个环节中，我们将创建实验基础的 S3 存储桶和 ECS 集群。\n创建 S3 存储桶 我们先创建一个 S3 存储桶用于存储实验数据，以及实验过程中产生的文件。\n  通过以下链接导航到 S3 控制台：https://s3.console.aws.amazon.com/s3/home?region=us-east-1\n  点击右侧的 Create Bucket：   输入存储桶名称为 algo-trading-workshop-您的名字简称，并确保区域名为 us-east-1：   创建成功后可以在控制台中看到新的存储桶：   创建 ECS 集群 接下来我们创建一个 ECS 集群。\n  通过以下链接导航到 ECS 控制台：https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters\n  点击 Create Cluster：   在下一步中保持默认，点击 Next step：   输入集群名称 algo-trading-workshop，点击 Create：   创建成功后可以在控制台中看到新的 ECS 集群：   "
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/",
+	"title": "1. 从零构建量化平台",
+	"tags": [],
+	"description": "",
+	"content": "\r本实验建议在 us-east-1 区域进行。\n\r在这个部分，我们将体验在量化开发中使用 AWS 大数据服务和容器服务。这包括：\n 通过 Glue/Athena 快速创建金融数据湖 在 Notebook 中运行简单 BackTrader 策略（双均线策略） 在 Notebook 中调用 ECS 运行 grid search（双均线策略） 在 Notebook 中定义并运行一个 SageMaker 超参优化任务（双均线策略）  （此处应有架构图）\n"
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.2.backtrader_intro/",
+	"title": "1.2 BackTrader 入门",
+	"tags": [],
+	"description": "",
+	"content": "BackTrader 入门 本实验建议在 us-east-1 区域进行。\n\rBackTrader 简介 基于 Python 的量化回测框架有很多，包括开源的 zipline、vnpy、pyalgotrader 和 backtrader等，国内也有众多商业化的回测软件。Backtrader，因为它功能十分完善，有完整的使用文档，可以参考https://www.backtrader.com/docu/。BackTrader 的优点包括：\n 安装相对简单（直接pip安装即可） 运行速度快，支持基于 pandas 的矢量运算 内置了 talib 股票分析技术指标库 支持多品种、多策略、多周期的回测和交易 支持 pyflio、empyrica 分析模块库 支持 alphalens 多因子分析模块库等 扩展灵活，方便进行容器化部署 可以集成 TensorFlow、PyTorch 等机器学习框架使用  运行 BackTrader 示例策略 我们在这里将展示一个 BackTrader 回测任务的示例代码。这个代码构建了一个简单双均线策略，并且使用某支自定义股票的历史日线数据进行回测。\n 下载本实验使用的 Notebook 代码：1.2.backtrader_intro.ipynb 回到 SageMaker Notebook 界面，点击 Upload Files 按钮：  将上一步下载的 Notebook 代码上传并打开 点击右上角的 kernel 选项：  选择 conda_python3  运行 Notebook 开始实验  实验完成后，应该可以看到和 BackTrader 简介 环节所示的图相似的回测效果。其中：\n 最上方的红/蓝线，红线代表现金余额，蓝线代表账户总价值 向下的红/蓝标记，蓝点标识交易盈利，红点表示交易亏损 向下的行情图中，黑线代表收盘价，其他颜色线代表自定义的技术指标，红/绿箭头代表卖出/买入点位 最下方的柱状图代表成交量  在这个环节，您应该已经熟悉了 BackTrader 的基本编程和使用方法。接下来的环节中，我们将把 BackTrader 打包到容器中进行使用。\n"
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/2.machinelearning/2.2.long_short_predict/",
+	"title": "2.2 示例策略：多空概率简单预测",
+	"tags": [],
+	"description": "",
+	"content": "示例策略：多空概率简单预测 本实验需要在us-east-1区域进行。\n\r在这个实验中，我们将介绍一个使用机器学习的示例策略。这个示例策略使用 Keras 神经网络来进行一些涨跌幅的简单预测。\n策略采用一些参数来定义预测的范围和执行交易的条件。比如：\n forward_window：预测的时间窗口 lookback：每个窗口使用多久的多少历史数据 profit_target：盈利目标 stop_target：止损条件  实验步骤 下载并在 SageMaker Notebook 中运行本实验使用的 Notebook 代码：2.2.long_short_predict.ipynb\n"
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.3.aws_sdk/",
+	"title": "0.3 使用 AWS SDK 创建 S3 存储桶和 ECS 集群（选项二）",
+	"tags": [],
+	"description": "",
+	"content": "使用 AWS SDK 创建 S3 存储桶和 ECS 集群 本实验建议在 us-east-1 区域进行。\n\r创建 Notebook 在这一步中，我们将导航到 SageMaker 控制台在新创建的 Notebook 中运行 AWS SDK 的简单代码。\n登录 AWS 控制台，并在 us-east-1 区域打开之前创建的 SageMaker Notebook：\n 跳转到 SageMaker 控制台：https://us-east-1.console.aws.amazon.com/sagemaker/home?region=us-east-1#/ 单击左侧的 Notebook，然后点击 Notebook instances 在右侧的 Notebook instances 界面，找到名为 AlgoTradingWorkshop 的 SageMaker Notebook 实例，并点击 Open JupyterLab：   控制台将会跳转到 JupyterLab 界面，在 JupyterLab 中创建一个新的 Notebook：\n  点击左上角的 + 按钮，这时会显示右侧的 Launcher\n  在 Launcher 中选择 conda_python3 内核   点击保存按钮，并重命名这个 notebook 为 aws_sdk.ipynb   运行 AWS SDK 代码 在这一步中，我们将在刚刚创建的 Notebook 中运行 AWS SDK 的简单代码。\n 首先，我们定义一些环境变量。请将以下代码复制到 Notebook 的第一个 cell 运行。这里可以将 my_name 设置为自己姓名的简称：  my_name = ''\raws_region = 'us-east-1'\rbucket = 'algo-trading-workshop-{}'.format(my_name)\r 要使用 AWS SDK，接下来要用 pip 安装 boto3（AWS SDK for Python）。同样将以下代码复制到第二个 cell 运行：  !pip install botocore boto3\r!pip show boto3\r 接下来将以下代码复制到第二个 cell 运行，创建 S3 存储桶和 ECS 集群：  import boto3\rs3 = boto3.client('s3', region_name=aws_region)\rs3.create_bucket(Bucket=bucket)\recs = boto3.client('ecs', region_name=aws_region)\recs.create_cluster(clusterName='algo-trading-workshop')\r看到如上的结果就说明代码执行成功了。这些代码起到和 0.2 中控制台操作完全相同的作用。\n"
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.3.ecs_gridsearch/",
+	"title": "1.3 使用 ECS 批量运行任务",
+	"tags": [],
+	"description": "",
+	"content": "使用 ECS 批量运行 Python 任务 本实验建议在 us-east-1 区域进行。\n\r在 Python 中，全局解释器锁（GIL）使得多线程无法并行执行。与 C 和 Java 等语言不同，Python 的多线程很难高效将多个线程映射到多个 CPU 上执行。虽然 Python 提供了 multiprocessing 等多进程的支持，但这在代码实现上较为繁琐，而且在效率和可扩展性上无法与使用容器技术相比。\n运行基于 Python 的高性能计算任务的推荐方式是将任务拆分成并行任务。容器提供标准化的运行环境，并且具有高资源利用率与隔离性的优点，并且不需要对现有代码进行大量改造。\n例如，在量化研究中经常遇到需要对超参进行优化的问题，不同的超参可能会对策略的表现有决定性的影响。对超参优化简单粗暴的处理方式就是进行网格搜索（grid search），这尤其适用于一些超参组合不多的场景。在下面的示例中，我们将展示如何通过容器技术，在 AWS ECS 服务中大量进行并行的网格搜索。\n搭建 ECS 示例程序 在这个环节，我们会先在 ECS 上搭建一个示例应用。如果您之前对 Docker 并不是很熟悉，这个环节可以帮助您快速掌握容器技术的一些基础知识。\n上传 Notebook 代码   下载此环节使用的 Notebook 代码到本地：1.3.1.ecs_sample_app.ipynb\n  回到 JupyterLab 界面，点击左上角的上传按钮：   选择刚刚下载的 1.3.1.ecs_samle_app.ipynb 文件并上传。上传成功后打开 Notebook：   接下来逐个 cell 执行 Notebook 代码就可以了。您可能注意到代码中主要使用 Boto3（AWS Python SDK）进行了如下操作：\n参数定义  这里主要需要将 my_name 修改为您定义的参数名称：  aws_account_id = boto3.client('sts').get_caller_identity().get('Account')\rrepository_name = 'ecs-gridsearch'\raws_region = 'us-east-1'\rmy_name = 'xxx'\rbucket = 'algo-trading-workshop-{}'.format(my_name)\r创建镜像仓库和容器镜像  创建名为 ecs-demo-php-simple-app 的 ECR 镜像仓库，这将用于存储 Docker 镜像：  ecr.create_repository(repositoryName=repository_name)\r  创建完成之后，可以导航到 ECR 控制台：https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-east-1\n  这里可以看到新创建的镜像仓库：   接下来构建 Docker 镜像并将其推送到镜像仓库：\n  !docker build ecs-demo-php-simple-app -t ecs-demo-php-simple-app\r!docker tag ecs-demo-php-simple-app {aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com/{repository_name}\r!aws ecr get-login-password | docker login --username AWS --password-stdin {aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com\r!docker push {aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com/{repository_name}\r 成功之后可以点开之前的镜像仓库页面，看到推送的镜像：   创建 ECS 任务定义  代码中定义了任务需要使用的容器镜像和一些基础配置：  ecs.register_task_definition(\rfamily=\u0026quot;sample-app\u0026quot;,\rvolumes=[\r{\r\u0026quot;name\u0026quot;: \u0026quot;my-vol\u0026quot;,\r\u0026quot;host\u0026quot;: {}\r}\r],\rnetworkMode=\u0026quot;awsvpc\u0026quot;,\rexecutionRoleArn=\u0026quot;arn:aws:iam::{}:role/ecsTaskExecutionRole\u0026quot;.format(aws_account_id),\rcontainerDefinitions=[\r{\r\u0026quot;name\u0026quot;: \u0026quot;simple-app\u0026quot;,\r\u0026quot;image\u0026quot;: \u0026quot;{}.dkr.ecr.{}.amazonaws.com/{}:latest\u0026quot;.format(aws_account_id, aws_region, repository_name),\r\u0026quot;portMappings\u0026quot;: [\r{\r\u0026quot;containerPort\u0026quot;: 80,\r\u0026quot;hostPort\u0026quot;: 80,\r\u0026quot;protocol\u0026quot;: \u0026quot;tcp\u0026quot;\r}\r],\r\u0026quot;mountPoints\u0026quot;: [\r{\r\u0026quot;sourceVolume\u0026quot;: \u0026quot;my-vol\u0026quot;,\r\u0026quot;containerPath\u0026quot;: \u0026quot;/var/www/my-vol\u0026quot;\r}\r],\r\u0026quot;entryPoint\u0026quot;: [\r\u0026quot;/usr/sbin/apache2\u0026quot;,\r\u0026quot;-D\u0026quot;,\r\u0026quot;FOREGROUND\u0026quot;\r],\r\u0026quot;essential\u0026quot;: True\r},\r{\r\u0026quot;name\u0026quot;: \u0026quot;busybox\u0026quot;,\r\u0026quot;image\u0026quot;: \u0026quot;busybox\u0026quot;,\r\u0026quot;cpu\u0026quot;: 10,\r\u0026quot;memory\u0026quot;: 500,\r\u0026quot;volumesFrom\u0026quot;: [\r{\r\u0026quot;sourceContainer\u0026quot;: \u0026quot;simple-app\u0026quot;\r}\r],\r\u0026quot;entryPoint\u0026quot;: [\r\u0026quot;sh\u0026quot;,\r\u0026quot;-c\u0026quot;\r],\r\u0026quot;command\u0026quot;: [\r\u0026quot;/bin/sh -c \\\u0026quot;while true; do /bin/date \u0026gt; /var/www/my-vol/date; sleep 1; done\\\u0026quot;\u0026quot;\r],\r\u0026quot;essential\u0026quot;: False\r}\r],\rrequiresCompatibilities=[\u0026quot;FARGATE\u0026quot;],\rmemory=\u0026quot;512\u0026quot;,\rcpu=\u0026quot;256\u0026quot;\r)\r  完成之后，可以导航到 ECS 控制台的 Task Definitions 界面：https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions\n  可以看到刚刚创建的任务定义：   创建好的任务定义有一个 Amazon 资源名称（ARN），请复制 \u0026lsquo;taskDefinitionArn\u0026rsquo; 的值到下一个 cell 中：   运行示例程序   首先，导航到 CloudFormation 控制台：https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringStatus=active\u0026amp;filteringText=\u0026amp;viewNested=true\u0026amp;hideStacks=false\n  在 AlgoTradingWorkshop 堆栈的 Output 页面下，寻找三个公有子网的 id 和 HTTPSecurityGroup 的 id 复制到下一个 cell中：   完成上述步骤之后，继续执行 Notebook 中的代码，就可以在 Fargate 中创建容器来运行示例程序了\n  执行完之后，导航到 ECS 控制台的集群界面：https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/clusters\n  点击 AlgoTradingWorkshop 集群：   再点击 Task：   在task的详情界面中，找到 Public IP，此地址为示例应用的公网服务地址   在浏览器中输入此地址，就可以访问示例应用了\n  使用 ECS 进行网格搜索 在刚才的环节，您应该已经熟悉了 ECS 中的一些基本概念和部署服务的步骤。在这个环节中，我们将真正开始批量在 ECS 中运行网格搜索。\n上传 Notebook 代码   下载此环节使用的 Notebook 代码到本地：1.3.2.ecs_grid_search.ipynb\n  回到 JupyterLab 界面，点击左上角的上传按钮：   选择刚刚下载的 1.3.2.ecs_grid_search.ipynb 文件并上传。上传成功后打开 Notebook：   接下来逐个 cell 执行 Notebook 代码就可以了。您可能注意到代码中主要使用 Boto3（AWS Python SDK）进行了如下操作：\n定义参数  定义参数。这里主要需要将 my_name 修改为您定义的参数名称：  import boto3\raws_account_id = boto3.client('sts').get_caller_identity().get('Account')\rrepository_name = 'ecs-gridsearch'\raws_region = 'us-east-1'\rmy_name = 'xxx'\rbucket = 'algo-trading-workshop-{}'.format(my_name)\r获取实验数据  接下来我们通过 AWS Data Wrangler 库定义了一个函数，这个函数将调用 Athena 执行一个 SQL 语句，获取某支股票的历史数据：  import awswrangler as wr\rs3_output = wr.athena.create_athena_bucket()\rdef execute_query(database, sql):\rquery_execution_id = wr.athena.start_query_execution(database=database, sql=sql)\rresponse = wr.athena.get_query_execution(query_execution_id=query_execution_id)\rwr.athena.wait_query(query_execution_id=query_execution_id)\rOutputLocation = response['ResultConfiguration']['OutputLocation']\rreturn OutputLocation\rdatabase = 'stock-data'\rtable = 'stock_day'\rfields = '*'\rticker = '600519'\rorderby = 'tradedate'\rsort = 'ASC'\rsql = f'''\rSELECT {fields}\rFROM \u0026quot;{database}\u0026quot;.\u0026quot;{table}\u0026quot;\rWHERE ticker='{ticker}'\rAND tradedate\u0026gt;='2019-01-01'\rORDER BY {orderby}\r{sort}\r'''\routput_location = execute_query(database, sql)\r\r这里使用的数据是从 1.1 快速创建金融数据湖 中创建的简单数据湖中抽取的。\n\r  历史日线数据经过重命名、前复权等操作后再写入到 S3 中的指定路径。数据内容大致如下：   完成之后可以看到写入 S3 的数据文件：   定义回测任务  接下来的步骤定义了一个回测任务，这个回测任务所使用的策略和 1.2 BackTrader 入门 使用的策略是完全相同的 这个回测任务使用总共 100 组超参，这些超参需要事先定义，并一一保存在 S3 的指定路径下：  import json\rcounter = 0\rfor i in range(5, 10):\rfor j in range(10, 30):\rcounter += 1\rparams = {\r'fastmaperiod': i,\r'slowmaperiod': j\r}\rs3.put_object(Body=json.dumps(params), Bucket=bucket, Key='{}/trial_{}/input/params.json'.format(repository_name, str(counter)))\rnum_trials = counter\r创建镜像仓库和容器镜像  创建名为 ecs-gridsearch 的 ECR 镜像仓库，这将用于存储 Docker 镜像：  ecr.create_repository(repositoryName=repository_name)\r  创建完成之后，可以导航到 ECR 控制台：https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-east-1\n  这里可以看到新创建的镜像仓库：   在这个实验里，我们自定义了一个 Dockerfile。这个 Dockerfile 定义了容器的基础环节和启动命令：\n  %%writefile {repository_name}/Dockerfile\rFROM python:3.8\rRUN pip --no-cache-dir install \\\rbacktrader\\\rboto3 \\\rpandas\rRUN curl \u0026quot;https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip\u0026quot; -o \u0026quot;awscliv2.zip\u0026quot; \u0026amp;\u0026amp; unzip awscliv2.zip \u0026amp;\u0026amp; ./aws/install \u0026amp;\u0026amp; rm awscliv2.zip \u0026amp;\u0026amp; rm -rf aws/\rENV ENVIRONMENT=\u0026quot;/home/environment\u0026quot;\rRUN mkdir -p $ENVIRONMENT/input\rRUN mkdir -p $ENVIRONMENT/output\rCOPY backtest.py $ENVIRONMENT/\rCMD aws s3 cp s3://$BUCKET/$PREFIX/trial_$TRIAL/input/ $ENVIRONMENT/input/ --recursive \u0026amp;\u0026amp; \\\raws s3 cp s3://$BUCKET/$PREFIX/data.csv $ENVIRONMENT/data.csv \u0026amp;\u0026amp; \\\rpython $ENVIRONMENT/backtest.py \u0026amp;\u0026amp; \\\raws s3 cp $ENVIRONMENT/output/ s3://$BUCKET/$PREFIX/trial_$TRIAL/output/ --recursive\r 遵循和之前一样的步骤构建并推送容器镜像。成功之后可以点开之前的镜像仓库页面，看到推送的镜像：   创建 ECS 任务定义  代码中定义了任务需要使用的容器镜像和一些基础配置：  ecs.register_task_definition(\rfamily=repository_name,\rnetworkMode=\u0026quot;awsvpc\u0026quot;,\rexecutionRoleArn=\u0026quot;arn:aws:iam::{}:role/ecsTaskExecutionRole\u0026quot;.format(aws_account_id),\rcontainerDefinitions=[\r{\r\u0026quot;name\u0026quot;: repository_name,\r\u0026quot;image\u0026quot;: \u0026quot;{}.dkr.ecr.{}.amazonaws.com/{}\u0026quot;.format(aws_account_id, aws_region, repository_name),\r\u0026quot;essential\u0026quot;: True,\r\u0026quot;logConfiguration\u0026quot;: {\r\u0026quot;logDriver\u0026quot;: \u0026quot;awslogs\u0026quot;,\r\u0026quot;options\u0026quot;: {\r\u0026quot;awslogs-group\u0026quot;: repository_name,\r\u0026quot;awslogs-region\u0026quot;: aws_region,\r\u0026quot;awslogs-stream-prefix\u0026quot;: repository_name\r}\r},\r},\r],\rrequiresCompatibilities=[\u0026quot;FARGATE\u0026quot;],\rmemory=\u0026quot;2048\u0026quot;,\rcpu=\u0026quot;1024\u0026quot;\r)\r  完成之后，可以导航到 ECS 控制台的 Task Definitions 界面：https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions\n  可以看到刚刚创建的任务定义：   创建好的任务定义有一个 Amazon 资源名称（ARN），请复制 \u0026lsquo;taskDefinitionArn\u0026rsquo; 的值到下一个 cell 中：   批量运行 ECS 任务   首先，导航到 CloudFormation 控制台：https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringStatus=active\u0026amp;filteringText=\u0026amp;viewNested=true\u0026amp;hideStacks=false\n  在 AlgoTradingWorkshop 堆栈的 Output 页面下，寻找三个私有子网的 id 和 NoIngressSecurityGroup 的 id 复制到下一个 cell中：   完成上述步骤之后，继续执行 Notebook 中的代码，最后就可以在 Fargate 中批量创建任务了\n  执行完之后，导航到 ECS 控制台的集群界面：https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/clusters\n  点击 AlgoTradingWorkshop 集群：   再点击 Task，在task中可以查看到相关任务，在执行完并行计算后，任务会自动退出：   在 CloudWatch 中也可以查看容器任务运行的日志记录：   点击刚刚生成的任意 log stream 即可查看根据策略生成的交易日志：   在最后的部分，我们可以排序和热图等方式找到最优的参数组合：   "
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/2.machinelearning/",
+	"title": "2. 在量化开发中使用机器学习",
+	"tags": [],
+	"description": "",
+	"content": "\r本实验建议在 us-east-1 区域进行。\n\r在这个部分，我们将展示如何使用 SageMaker 进行机器学习，以及一些基于机器学习的示例策略：\n 介绍 SageMaker 平台 介绍 BYOC 的使用方式和如何 host 一个训练好的模型 介绍两个使用 TensorFlow 的示例策略  （此处应有架构图）\n"
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/2.machinelearning/2.3.portfolio_optimization/",
+	"title": "2.3 示例策略：投资组合优化",
+	"tags": [],
+	"description": "",
+	"content": "示例策略：投资组合优化 本实验需要在us-east-1区域进行。\n\r找一个 A 股小指数，把投资组合优化策略代码拿来实验一下看看效果\n"
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.4.sagemaker_hpo/",
+	"title": "1.4 使用 SageMaker 运行超参优化",
+	"tags": [],
+	"description": "",
+	"content": "使用 SageMaker 运行超参优化 本实验建议在 us-east-1 区域进行。\n\r这个部分将介绍如何通过 SageMaker HPO 功能在更少的 trial 中找到最优参数组合\n（此处应有架构图）\n下载本实验使用的 Notebook 代码：1.4.sagemaker_hpo.ipynb\n"
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/3.authors/",
+	"title": "关于作者",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/",
+	"title": "算法交易 Workshop",
+	"tags": [],
+	"description": "",
+	"content": "欢迎来到算法交易 Workshop。您可以通过此训练营快速了解如何在算法开发中使用 xxx 多种AWS服务\n下图是此次 Workshop 的架构图（此处应有架构图）\n本次训练营的学习成果：    接下来，点击实验手册开始动手实验！ 本实验建议在 us-east-1 区域进行。\n\r实验模块    模块内容 所需时间 Owner     0.1 部署云端基础网络环境和 SageMaker Notebook 10 分钟 grace   0.2 通过 AWS 控制台创建 S3 存储桶和 ECS 集群 10 分钟 grace   0.3 使用 AWS SDK 创建 S3 存储桶和 ECS 集群(可选) 10 分钟 yinan   1.1 快速创建金融数据湖 15 分钟 hanlin\u0026amp;yinan   1.2 BackTrader 入门 10 分钟 yinan   1.3 使用 ECS 批量运行 Python 任务 20 分钟 bruce\u0026amp;yinan   1.4 使用 SageMaker 运行超参优化 20 分钟 sailong\u0026amp;yinan   2.1 使用 SageMaker 进行模型训练和部署 30 分钟 guangdong\u0026amp;yinan   2.2 示例策略：多空概率简单预测 15 分钟 yinan   2.3 示例策略：投资组合优化 15 分钟 yinan   清理实验环境 10 分钟 grace    "
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "https://github.com/kynging/AlgoTradingWorkshop.io/x.how_to_use_hugo/",
+	"title": "如何使用hugo",
+	"tags": [],
+	"description": "",
+	"content": "这个页面不会提供给最终客户，只是向大家展示如何使用 hugo 搭建 workshop 网站。\n 首先，这个网站的源代码储存在 https://github.com/kynging/algo-trading-workshop，请务必给个 star 然后 clone 到本地 然后，去 hugo 的官方网站根据指示下载 hugo server：https://gohugo.io/getting-started/installing/ 下载成功后运行以下命令行启动 hugo server：  hugo server -D\r 然后就可以去 localhost:1313 访问这个网站了 如果需要修改绑定的 IP 和端口，运行：  hugo server -D --bind 0.0.0.0 --port xxx\r接下来介绍以下这个 hugo 项目的文件结构，主要会用到的目录如下：\n  content：这个文件夹里面包含网站的所有网页内容  0.Prerequisite：对应“0. 准备工作”  _index.zh_cn.md：“0. 准备工作”主页面 0.1.vpc_sagemaker_basics.zh_cn.md：“0.1 部署云端基础环境” 0.2.aws_console.zh_cn.md：“0.2 通过 AWS 控制台创建 S3 存储桶和 ECS 集群（选项一）” 0.3.aws_sdk.zh_cn.md：“0.3 使用 AWS SDK 创建 S3 存储桶和 ECS 集群（选项二）”   1.SetupPlatform：对应“1. 从零构建量化平台”  _index.zh_cn.md：“1. 从零构建量化平台”主页面 1.1.quickstart_datalake.zh_cn.md：“1.1 快速创建金融数据湖” 1.2.backtrader_intro.zh_cn.md：“1.2 BackTrader 入门” 1.3.sagemaker_hpo.zh_cn.md：“1.3 使用 SageMaker 运行超参优化” 1.4.ecs_gridsearch.zh_cn.md：“1.4 使用 ECS 批量运行任务”   2.MachineLearning：对应“2. 在量化开发中使用机器学习”  _index.zh_cn.md：“2. 在量化开发中使用机器学习”主页面 2.1.sagemaker_example.zh_cn.md：“2.1 使用 SageMaker 进行模型训练和部署” 2.2.long_short_predict.zh_cn.md：“2.2 示例策略：多空概率简单预测” 2.3.portfolio_optimization.zh_cn.md：“2.3 示例策略：投资组合优化”   3.Authors：对应“关于作者”  _index.zh_cn.md：“关于作者”   x.how_to_use_hugo：对应“如何使用hugo”  _index.zh_cn.md：“如何使用hugo”   _index.zh_cn.md：网站主页面   static：这个文件夹里面包含网站的所有静态文件  images：所有的架构图都保存存在这个路径下 files：所有的 notebook 代码和 CloudFormation 模板都保存在这个路径下     "
+}]

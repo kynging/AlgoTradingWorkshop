@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-US" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
+<html lang="zh_cn" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta property="og:title" content="lucky-money.lab798.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://lucky-money.lab798.com" />
+    <meta property="og:image" content="https://lucky-money.lab798.com/images/AWS-Logo.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="generator" content="Hugo 0.87.0" />
+    <meta name="description" content="">
+<meta name="author" content="AWS&lt;fengbiao@amazon.com&gt;">
+
+    <link rel="shortcut icon" href="../../kynging/AlgoTradingWorkshop.io/images/favicon.ico" type="image/x-icon" />
+<link rel="icon" href="../../kynging/AlgoTradingWorkshop.io/images/favicon.ico" type="image/x-icon" />
+
+    <title>1.3 使用 ECS 批量运行任务 :: 算法交易 Workshop</title>
+
+    
+    <link href="../../kynging/AlgoTradingWorkshop.io/css/nucleus.css?1628348615" rel="stylesheet">
+    <link href="../../kynging/AlgoTradingWorkshop.io/css/fontawesome-all.min.css?1628348615" rel="stylesheet">
+    <link href="../../kynging/AlgoTradingWorkshop.io/css/hybrid.css?1628348615" rel="stylesheet">
+    <link href="../../kynging/AlgoTradingWorkshop.io/css/featherlight.min.css?1628348615" rel="stylesheet">
+    <link href="../../kynging/AlgoTradingWorkshop.io/css/perfect-scrollbar.min.css?1628348615" rel="stylesheet">
+    <link href="../../kynging/AlgoTradingWorkshop.io/css/auto-complete.css?1628348615" rel="stylesheet">
+    <link href="../../kynging/AlgoTradingWorkshop.io/css/theme.css?1628348615" rel="stylesheet">
+    <link href="../../kynging/AlgoTradingWorkshop.io/css/hugo-theme.css?1628348615" rel="stylesheet">
+    <link href="../../kynging/AlgoTradingWorkshop.io/css/jquery-ui.min.css?1628348615" rel="stylesheet">
+    
+      <link href="../../kynging/AlgoTradingWorkshop.io/css/theme-mine.css?1628348615" rel="stylesheet">
+    
+
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/jquery-3.3.1.min.js?1628348615"></script>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/jquery-ui-1.12.1.min.js?1628348615"></script>
+
+
+    <style type="text/css">
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/1.3.ecs_gridsearch/">
+    <nav id="sidebar" class="">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a href="../../" title="Go home"><svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 30" width="60%" style="padding:20px 0px;"><defs><style>.cls-1{fill:#fff;}  .cls-2{fill:#f90;fill-rule:evenodd;}</style></defs><title>AWS-Logo_White-Color</title><path class="cls-1" d="M14.09,10.85a4.7,4.7,0,0,0,.19,1.48,7.73,7.73,0,0,0,.54,1.19.77.77,0,0,1,.12.38.64.64,0,0,1-.32.49l-1,.7a.83.83,0,0,1-.44.15.69.69,0,0,1-.49-.23,3.8,3.8,0,0,1-.6-.77q-.25-.42-.51-1a6.14,6.14,0,0,1-4.89,2.3,4.54,4.54,0,0,1-3.32-1.19,4.27,4.27,0,0,1-1.22-3.2A4.28,4.28,0,0,1,3.61,7.75,6.06,6.06,0,0,1,7.69,6.46a12.47,12.47,0,0,1,1.76.13q.92.13,1.91.36V5.73a3.65,3.65,0,0,0-.79-2.66A3.81,3.81,0,0,0,7.86,2.3a7.71,7.71,0,0,0-1.79.22,12.78,12.78,0,0,0-1.79.57,4.55,4.55,0,0,1-.58.22l-.26,0q-.35,0-.35-.52V2a1.09,1.09,0,0,1,.12-.58,1.2,1.2,0,0,1,.47-.35A10.88,10.88,0,0,1,5.77.32,10.19,10.19,0,0,1,8.36,0a6,6,0,0,1,4.35,1.35,5.49,5.49,0,0,1,1.38,4.09ZM7.34,13.38a5.36,5.36,0,0,0,1.72-.31A3.63,3.63,0,0,0,10.63,12,2.62,2.62,0,0,0,11.19,11a5.63,5.63,0,0,0,.16-1.44v-.7a14.35,14.35,0,0,0-1.53-.28,12.37,12.37,0,0,0-1.56-.1,3.84,3.84,0,0,0-2.47.67A2.34,2.34,0,0,0,5,11a2.35,2.35,0,0,0,.61,1.76A2.4,2.4,0,0,0,7.34,13.38Zm13.35,1.8a1,1,0,0,1-.64-.16,1.3,1.3,0,0,1-.35-.65L15.81,1.51a3,3,0,0,1-.15-.67.36.36,0,0,1,.41-.41H17.7a1,1,0,0,1,.65.16,1.4,1.4,0,0,1,.33.65l2.79,11,2.59-11A1.17,1.17,0,0,1,24.39.6a1.1,1.1,0,0,1,.67-.16H26.4a1.1,1.1,0,0,1,.67.16,1.17,1.17,0,0,1,.32.65L30,12.39,32.88,1.25A1.39,1.39,0,0,1,33.22.6a1,1,0,0,1,.65-.16h1.54a.36.36,0,0,1,.41.41,1.36,1.36,0,0,1,0,.26,3.64,3.64,0,0,1-.12.41l-4,12.86a1.3,1.3,0,0,1-.35.65,1,1,0,0,1-.64.16H29.25a1,1,0,0,1-.67-.17,1.26,1.26,0,0,1-.32-.67L25.67,3.64,23.11,14.34a1.26,1.26,0,0,1-.32.67,1,1,0,0,1-.67.17Zm21.36.44a11.28,11.28,0,0,1-2.56-.29,7.44,7.44,0,0,1-1.92-.67,1,1,0,0,1-.61-.93v-.84q0-.52.38-.52a.9.9,0,0,1,.31.06l.42.17a8.77,8.77,0,0,0,1.83.58,9.78,9.78,0,0,0,2,.2,4.48,4.48,0,0,0,2.43-.55,1.76,1.76,0,0,0,.86-1.57,1.61,1.61,0,0,0-.45-1.16A4.29,4.29,0,0,0,43,9.22l-2.41-.76A5.15,5.15,0,0,1,38,6.78a3.94,3.94,0,0,1-.83-2.41,3.7,3.7,0,0,1,.45-1.85,4.47,4.47,0,0,1,1.19-1.37A5.27,5.27,0,0,1,40.51.29,7.4,7.4,0,0,1,42.6,0a8.87,8.87,0,0,1,1.12.07q.57.07,1.08.19t.95.26a4.27,4.27,0,0,1,.7.29,1.59,1.59,0,0,1,.49.41.94.94,0,0,1,.15.55v.79q0,.52-.38.52a1.76,1.76,0,0,1-.64-.2,7.74,7.74,0,0,0-3.2-.64,4.37,4.37,0,0,0-2.21.47,1.6,1.6,0,0,0-.79,1.48,1.58,1.58,0,0,0,.49,1.18,4.94,4.94,0,0,0,1.83.92L44.55,7a5.08,5.08,0,0,1,2.57,1.6A3.76,3.76,0,0,1,47.9,11a4.21,4.21,0,0,1-.44,1.93,4.4,4.4,0,0,1-1.21,1.47,5.43,5.43,0,0,1-1.85.93A8.25,8.25,0,0,1,42.05,15.62Z"></path><path class="cls-2" d="M45.19,23.81C39.72,27.85,31.78,30,25,30A36.64,36.64,0,0,1,.22,20.57c-.51-.46-.06-1.09.56-.74A49.78,49.78,0,0,0,25.53,26.4,49.23,49.23,0,0,0,44.4,22.53C45.32,22.14,46.1,23.14,45.19,23.81Z"></path><path class="cls-2" d="M47.47,21.21c-.7-.9-4.63-.42-6.39-.21-.53.06-.62-.4-.14-.74,3.13-2.2,8.27-1.57,8.86-.83s-.16,5.89-3.09,8.35c-.45.38-.88.18-.68-.32C46.69,25.8,48.17,22.11,47.47,21.21Z"></path></svg></a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="../../kynging/AlgoTradingWorkshop.io/js/lunr.min.js?1628348615"></script>
+<script type="text/javascript" src="../../kynging/AlgoTradingWorkshop.io/js/auto-complete.js?1628348615"></script>
+<script type="text/javascript">
+    
+        var baseurl = "https:\/\/github.com\/kynging\/AlgoTradingWorkshop.io";
+    
+</script>
+<script type="text/javascript" src="../../kynging/AlgoTradingWorkshop.io/js/search.js?1628348615"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/kynging/AlgoTradingWorkshop.io/0.prerequisite/" title="0. 准备工作" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../kynging/AlgoTradingWorkshop.io/0.prerequisite/">
+          0. 准备工作
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.1.vpc_sagemaker_basics/" title="0.1 部署云端基础环境" class="dd-item ">
+        <a href="../../kynging/AlgoTradingWorkshop.io/0.prerequisite/0.1.vpc_sagemaker_basics/">
+        0.1 部署云端基础环境
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.2.aws_console/" title="0.2 通过 AWS 控制台创建 S3 存储桶和 ECS 集群（选项一）" class="dd-item ">
+        <a href="../../kynging/AlgoTradingWorkshop.io/0.prerequisite/0.2.aws_console/">
+        0.2 通过 AWS 控制台创建 S3 存储桶和 ECS 集群（选项一）
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.3.aws_sdk/" title="0.3 使用 AWS SDK 创建 S3 存储桶和 ECS 集群（选项二）" class="dd-item ">
+        <a href="../../kynging/AlgoTradingWorkshop.io/0.prerequisite/0.3.aws_sdk/">
+        0.3 使用 AWS SDK 创建 S3 存储桶和 ECS 集群（选项二）
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/kynging/AlgoTradingWorkshop.io/1.setupplatform/" title="1. 从零构建量化平台" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/">
+          1. 从零构建量化平台
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.1.quickstart_datalake/" title="1.1 快速创建金融数据湖" class="dd-item ">
+        <a href="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/1.1.quickstart_datalake/">
+        1.1 快速创建金融数据湖
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.2.backtrader_intro/" title="1.2 BackTrader 入门" class="dd-item ">
+        <a href="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/1.2.backtrader_intro/">
+        1.2 BackTrader 入门
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.3.ecs_gridsearch/" title="1.3 使用 ECS 批量运行任务" class="dd-item active">
+        <a href="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/1.3.ecs_gridsearch/">
+        1.3 使用 ECS 批量运行任务
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/1.setupplatform/1.4.sagemaker_hpo/" title="1.4 使用 SageMaker 运行超参优化" class="dd-item ">
+        <a href="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/1.4.sagemaker_hpo/">
+        1.4 使用 SageMaker 运行超参优化
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/kynging/AlgoTradingWorkshop.io/2.machinelearning/" title="2. 在量化开发中使用机器学习" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../kynging/AlgoTradingWorkshop.io/2.machinelearning/">
+          2. 在量化开发中使用机器学习
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+          
+          
+        
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/2.machinelearning/2.1.sagemaker_example/" title="2.1 使用 SageMaker 进行模型训练和部署" class="dd-item ">
+        <a href="../../kynging/AlgoTradingWorkshop.io/2.machinelearning/2.1.sagemaker_example/">
+        2.1 使用 SageMaker 进行模型训练和部署
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/2.machinelearning/2.2.long_short_predict/" title="2.2 示例策略：多空概率简单预测" class="dd-item ">
+        <a href="../../kynging/AlgoTradingWorkshop.io/2.machinelearning/2.2.long_short_predict/">
+        2.2 示例策略：多空概率简单预测
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+            
+            
+
+
+ 
+  
+    
+      <li data-nav-id="/kynging/AlgoTradingWorkshop.io/2.machinelearning/2.3.portfolio_optimization/" title="2.3 示例策略：投资组合优化" class="dd-item ">
+        <a href="../../kynging/AlgoTradingWorkshop.io/2.machinelearning/2.3.portfolio_optimization/">
+        2.3 示例策略：投资组合优化
+        
+        </a>
+    </li>
+     
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/kynging/AlgoTradingWorkshop.io/3.authors/" title="关于作者" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../kynging/AlgoTradingWorkshop.io/3.authors/">
+          关于作者
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+ 
+  
+    
+    <li data-nav-id="/kynging/AlgoTradingWorkshop.io/x.how_to_use_hugo/" title="如何使用hugo" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../kynging/AlgoTradingWorkshop.io/x.how_to_use_hugo/">
+          如何使用hugo
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+      <section id="shortcuts">
+        <h3></h3>
+        <ul>
+          
+              <li> 
+                  <a class="padding" href="https://github.com/kynging/AlgoTradingWorkshop"><i class='fab fa-github'></i> GitHub Project</a>
+              </li>
+          
+              <li> 
+                  <a class="padding" href="https://github.com/kynging/AlgoTradingWorkshop/issues"><i class='fas fa-envelope'></i> Have questions?</a>
+              </li>
+          
+        </ul>
+      </section>
+    
+
+    
+    <section id="footer">
+      <left>
+    Built with <i class="fas fa-heart"></i> by Lab798
+
+</left>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                  
+                  
+                  
+                  <div id="top-github-link">
+                    <a class="github-link" title='' href="https://github.com/kynging/AlgoTradingWorkshop1.SetupPlatform/1.3.ecs_gridsearch.zh_cn.md" target="blank">
+                      <i class="fas fa-code-branch"></i>
+                      <span id="top-github-link-text"></span>
+                    </a>
+                  </div>
+                  
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='../../kynging/AlgoTradingWorkshop.io/'>算法交易 Workshop</a> > <a href='../../kynging/AlgoTradingWorkshop.io/1.setupplatform/'>1. 从零构建量化平台</a> > 1.3 使用 ECS 批量运行任务
+          
+         
+          
+         
+          
+           
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents">
+  <ul>
+    <li><a href="#使用-ecs-批量运行-python-任务">使用 ECS 批量运行 Python 任务</a>
+      <ul>
+        <li><a href="#搭建-ecs-示例程序">搭建 ECS 示例程序</a></li>
+        <li><a href="#使用-ecs-进行网格搜索">使用 ECS 进行网格搜索</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+
+        
+        <div id="body-inner">
+          
+            <h1>1.3 使用 ECS 批量运行任务</h1>
+          
+
+        
+
+
+<h2 id="使用-ecs-批量运行-python-任务">使用 ECS 批量运行 Python 任务</h2>
+
+<div class="notices note" ><p>本实验建议在 us-east-1 区域进行。</p>
+</div>
+
+<p>在 Python 中，全局解释器锁（GIL）使得多线程无法并行执行。与 C 和 Java 等语言不同，Python 的多线程很难高效将多个线程映射到多个 CPU 上执行。虽然 Python 提供了 multiprocessing 等多进程的支持，但这在代码实现上较为繁琐，而且在效率和可扩展性上无法与使用容器技术相比。</p>
+<p>运行基于 Python 的高性能计算任务的推荐方式是将任务拆分成并行任务。容器提供标准化的运行环境，并且具有高资源利用率与隔离性的优点，并且不需要对现有代码进行大量改造。</p>
+<p>例如，在量化研究中经常遇到需要对超参进行优化的问题，不同的超参可能会对策略的表现有决定性的影响。对超参优化简单粗暴的处理方式就是进行网格搜索（grid search），这尤其适用于一些超参组合不多的场景。在下面的示例中，我们将展示如何通过容器技术，在 AWS ECS 服务中大量进行并行的网格搜索。</p>
+<h3 id="搭建-ecs-示例程序">搭建 ECS 示例程序</h3>
+<p><img src="../../images/1.3.ecs_gridsearch/sample_app_architecture.png" alt=""></p>
+<p>在这个环节，我们会先在 ECS 上搭建一个示例应用。如果您之前对 Docker 并不是很熟悉，这个环节可以帮助您快速掌握容器技术的一些基础知识。</p>
+<h4 id="上传-notebook-代码">上传 Notebook 代码</h4>
+<ul>
+<li>
+<p>下载此环节使用的 Notebook 代码到本地：<a href="../../files/1.3.1.ecs_sample_app.ipynb">1.3.1.ecs_sample_app.ipynb</a></p>
+</li>
+<li>
+<p>回到 JupyterLab 界面，点击左上角的<strong>上传</strong>按钮：
+<img src="../../images/1.3.ecs_gridsearch/upload_notebook.png" alt=""></p>
+</li>
+<li>
+<p>选择刚刚下载的 <strong>1.3.1.ecs_samle_app.ipynb</strong> 文件并上传。上传成功后打开 Notebook：
+<img src="../../images/1.3.ecs_gridsearch/sample_app_notebook.png" alt=""></p>
+</li>
+</ul>
+<p>接下来逐个 cell 执行 Notebook 代码就可以了。您可能注意到代码中主要使用 Boto3（AWS Python SDK）进行了如下操作：</p>
+<h4 id="参数定义">参数定义</h4>
+<ul>
+<li>这里主要需要将 <strong>my_name</strong> 修改为您定义的参数名称：</li>
+</ul>
+<pre><code>aws_account_id = boto3.client('sts').get_caller_identity().get('Account')
+repository_name = 'ecs-gridsearch'
+aws_region = 'us-east-1'
+my_name = 'xxx'
+bucket = 'algo-trading-workshop-{}'.format(my_name)
+</code></pre><h4 id="创建镜像仓库和容器镜像">创建镜像仓库和容器镜像</h4>
+<ul>
+<li>创建名为 <strong>ecs-demo-php-simple-app</strong> 的 ECR 镜像仓库，这将用于存储 Docker 镜像：</li>
+</ul>
+<pre><code>ecr.create_repository(repositoryName=repository_name)
+</code></pre><ul>
+<li>
+<p>创建完成之后，可以导航到 ECR 控制台：<a href="https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-east-1">https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-east-1</a></p>
+</li>
+<li>
+<p>这里可以看到新创建的镜像仓库：
+<img src="../../images/1.3.ecs_gridsearch/sample_app_ecr.png" alt=""></p>
+</li>
+<li>
+<p>接下来构建 Docker 镜像并将其推送到镜像仓库：</p>
+</li>
+</ul>
+<pre><code>!docker build ecs-demo-php-simple-app -t ecs-demo-php-simple-app
+!docker tag ecs-demo-php-simple-app {aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com/{repository_name}
+!aws ecr get-login-password | docker login --username AWS --password-stdin {aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com
+!docker push {aws_account_id}.dkr.ecr.{aws_region}.amazonaws.com/{repository_name}
+</code></pre><ul>
+<li>成功之后可以点开之前的镜像仓库页面，看到推送的镜像：
+<img src="../../images/1.3.ecs_gridsearch/sample_app_image.png" alt=""></li>
+</ul>
+<h4 id="创建-ecs-任务定义">创建 ECS 任务定义</h4>
+<ul>
+<li>代码中定义了任务需要使用的容器镜像和一些基础配置：</li>
+</ul>
+<pre><code>ecs.register_task_definition(
+    family=&quot;sample-app&quot;,
+    volumes=[
+        {
+            &quot;name&quot;: &quot;my-vol&quot;,
+            &quot;host&quot;: {}
+        }
+    ],
+    networkMode=&quot;awsvpc&quot;,
+    executionRoleArn=&quot;arn:aws:iam::{}:role/ecsTaskExecutionRole&quot;.format(aws_account_id),
+    containerDefinitions=[
+        {
+            &quot;name&quot;: &quot;simple-app&quot;,
+            &quot;image&quot;: &quot;{}.dkr.ecr.{}.amazonaws.com/{}:latest&quot;.format(aws_account_id, aws_region, repository_name),
+            &quot;portMappings&quot;: [
+                {
+                    &quot;containerPort&quot;: 80,
+                    &quot;hostPort&quot;: 80,
+                    &quot;protocol&quot;: &quot;tcp&quot;
+                }
+            ],
+            &quot;mountPoints&quot;: [
+                {
+                    &quot;sourceVolume&quot;: &quot;my-vol&quot;,
+                    &quot;containerPath&quot;: &quot;/var/www/my-vol&quot;
+                }
+            ],
+            &quot;entryPoint&quot;: [
+                &quot;/usr/sbin/apache2&quot;,
+                &quot;-D&quot;,
+                &quot;FOREGROUND&quot;
+            ],
+            &quot;essential&quot;: True
+        },
+        {
+            &quot;name&quot;: &quot;busybox&quot;,
+            &quot;image&quot;: &quot;busybox&quot;,
+            &quot;cpu&quot;: 10,
+            &quot;memory&quot;: 500,
+            &quot;volumesFrom&quot;: [
+            {
+              &quot;sourceContainer&quot;: &quot;simple-app&quot;
+            }
+            ],
+            &quot;entryPoint&quot;: [
+                &quot;sh&quot;,
+                &quot;-c&quot;
+            ],
+            &quot;command&quot;: [
+                &quot;/bin/sh -c \&quot;while true; do /bin/date &gt; /var/www/my-vol/date; sleep 1; done\&quot;&quot;
+            ],
+            &quot;essential&quot;: False
+        }
+    ],
+    requiresCompatibilities=[&quot;FARGATE&quot;],
+    memory=&quot;512&quot;,
+    cpu=&quot;256&quot;
+)
+</code></pre><ul>
+<li>
+<p>完成之后，可以导航到 ECS 控制台的 Task Definitions 界面：<a href="https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions">https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions</a></p>
+</li>
+<li>
+<p>可以看到刚刚创建的任务定义：
+<img src="../../images/1.3.ecs_gridsearch/sample_app_task_definition.png" alt=""></p>
+</li>
+<li>
+<p>创建好的任务定义有一个 Amazon 资源名称（ARN），请复制 <strong>&lsquo;taskDefinitionArn&rsquo;</strong> 的值到下一个 cell 中：
+<img src="../../images/1.3.ecs_gridsearch/sample_app_task_definition_arn.png" alt=""></p>
+</li>
+</ul>
+<h4 id="运行示例程序">运行示例程序</h4>
+<ul>
+<li>
+<p>首先，导航到 CloudFormation 控制台：<a href="https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringStatus=active&amp;filteringText=&amp;viewNested=true&amp;hideStacks=false">https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringStatus=active&amp;filteringText=&amp;viewNested=true&amp;hideStacks=false</a></p>
+</li>
+<li>
+<p>在 AlgoTradingWorkshop 堆栈的 <strong>Output</strong> 页面下，寻找三个公有子网的 id 和 <strong>HTTPSecurityGroup</strong> 的 id 复制到下一个 cell中：
+<img src="../../images/1.3.ecs_gridsearch/public_subnets.png" alt=""></p>
+</li>
+<li>
+<p>完成上述步骤之后，继续执行 Notebook 中的代码，就可以在 Fargate 中创建容器来运行示例程序了</p>
+</li>
+<li>
+<p>执行完之后，导航到 ECS 控制台的集群界面：<a href="https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/clusters">https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/clusters</a></p>
+</li>
+<li>
+<p>点击 <strong>AlgoTradingWorkshop</strong> 集群：
+<img src="../../images/1.3.ecs_gridsearch/ecs_cluster.png" alt=""></p>
+</li>
+<li>
+<p>再点击 <strong>Task</strong>：
+<img src="../../images/1.3.ecs_gridsearch/sample_app_task.png" alt=""></p>
+</li>
+<li>
+<p>在task的详情界面中，找到 <strong>Public IP</strong>，此地址为示例应用的公网服务地址
+<img src="../../images/1.3.ecs_gridsearch/sample_app_ip.png" alt=""></p>
+</li>
+<li>
+<p>在浏览器中输入此地址，就可以访问示例应用了</p>
+</li>
+</ul>
+<p><img src="../../images/1.3.ecs_gridsearch/sample_app.png" alt=""></p>
+<h3 id="使用-ecs-进行网格搜索">使用 ECS 进行网格搜索</h3>
+<p><img src="../../images/1.3.ecs_gridsearch/grid_search_architecture.png" alt=""></p>
+<p>在刚才的环节，您应该已经熟悉了 ECS 中的一些基本概念和部署服务的步骤。在这个环节中，我们将真正开始批量在 ECS 中运行网格搜索。</p>
+<h4 id="上传-notebook-代码-1">上传 Notebook 代码</h4>
+<ul>
+<li>
+<p>下载此环节使用的 Notebook 代码到本地：<a href="../../files/1.3.2.ecs_grid_search.ipynb">1.3.2.ecs_grid_search.ipynb</a></p>
+</li>
+<li>
+<p>回到 JupyterLab 界面，点击左上角的<strong>上传</strong>按钮：
+<img src="../../images/1.3.ecs_gridsearch/upload_notebook.png" alt=""></p>
+</li>
+<li>
+<p>选择刚刚下载的 <strong>1.3.2.ecs_grid_search.ipynb</strong> 文件并上传。上传成功后打开 Notebook：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_notebook.png" alt=""></p>
+</li>
+</ul>
+<p>接下来逐个 cell 执行 Notebook 代码就可以了。您可能注意到代码中主要使用 Boto3（AWS Python SDK）进行了如下操作：</p>
+<h4 id="定义参数">定义参数</h4>
+<ul>
+<li>定义参数。这里主要需要将 <strong>my_name</strong> 修改为您定义的参数名称：</li>
+</ul>
+<pre><code>import boto3
+
+aws_account_id = boto3.client('sts').get_caller_identity().get('Account')
+repository_name = 'ecs-gridsearch'
+aws_region = 'us-east-1'
+my_name = 'xxx'
+bucket = 'algo-trading-workshop-{}'.format(my_name)
+</code></pre><h4 id="获取实验数据">获取实验数据</h4>
+<ul>
+<li>接下来我们通过 AWS Data Wrangler 库定义了一个函数，这个函数将调用 Athena 执行一个 SQL 语句，获取某支股票的历史数据：</li>
+</ul>
+<pre><code>import awswrangler as wr
+
+s3_output = wr.athena.create_athena_bucket()
+
+def execute_query(database, sql):
+    
+    query_execution_id = wr.athena.start_query_execution(database=database, sql=sql)
+    response = wr.athena.get_query_execution(query_execution_id=query_execution_id)
+    wr.athena.wait_query(query_execution_id=query_execution_id)
+    OutputLocation = response['ResultConfiguration']['OutputLocation']
+    
+    return OutputLocation
+	
+database = 'stock-data'
+table = 'stock_day'
+fields = '*'
+ticker = '600519'
+orderby = 'tradedate'
+sort = 'ASC'
+
+sql = f'''
+SELECT {fields}
+FROM &quot;{database}&quot;.&quot;{table}&quot;
+WHERE ticker='{ticker}'
+AND tradedate&gt;='2019-01-01'
+ORDER BY {orderby}
+{sort}
+'''
+
+output_location = execute_query(database, sql)
+</code></pre>
+<div class="notices note" ><p>这里使用的数据是从 <a href="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/1.1.quickstart_datalake/">1.1 快速创建金融数据湖</a> 中创建的简单数据湖中抽取的。</p>
+</div>
+
+<ul>
+<li>
+<p>历史日线数据经过重命名、前复权等操作后再写入到 S3 中的指定路径。数据内容大致如下：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_dataframe.png" alt=""></p>
+</li>
+<li>
+<p>完成之后可以看到写入 S3 的数据文件：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_s3.png" alt=""></p>
+</li>
+</ul>
+<h4 id="定义回测任务">定义回测任务</h4>
+<ul>
+<li>接下来的步骤定义了一个回测任务，这个回测任务所使用的策略和 <a href="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/1.2.backtrader_intro/">1.2 BackTrader 入门</a> 使用的策略是完全相同的</li>
+<li>这个回测任务使用总共 100 组超参，这些超参需要事先定义，并一一保存在 S3 的指定路径下：</li>
+</ul>
+<pre><code>import json
+
+counter = 0
+for i in range(5, 10):
+    for j in range(10, 30):
+        counter += 1
+        params = {
+            'fastmaperiod': i,
+            'slowmaperiod': j
+        }
+        s3.put_object(Body=json.dumps(params), Bucket=bucket, Key='{}/trial_{}/input/params.json'.format(repository_name, str(counter)))
+
+num_trials = counter
+</code></pre><h4 id="创建镜像仓库和容器镜像-1">创建镜像仓库和容器镜像</h4>
+<ul>
+<li>创建名为 <strong>ecs-gridsearch</strong> 的 ECR 镜像仓库，这将用于存储 Docker 镜像：</li>
+</ul>
+<pre><code>ecr.create_repository(repositoryName=repository_name)
+</code></pre><ul>
+<li>
+<p>创建完成之后，可以导航到 ECR 控制台：<a href="https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-east-1">https://us-east-1.console.aws.amazon.com/ecr/repositories?region=us-east-1</a></p>
+</li>
+<li>
+<p>这里可以看到新创建的镜像仓库：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_ecr.png" alt=""></p>
+</li>
+<li>
+<p>在这个实验里，我们自定义了一个 Dockerfile。这个 Dockerfile 定义了容器的基础环节和启动命令：</p>
+</li>
+</ul>
+<pre><code>%%writefile {repository_name}/Dockerfile
+FROM python:3.8
+
+RUN pip --no-cache-dir install \
+    backtrader\
+    boto3 \
+    pandas
+
+RUN curl &quot;https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip&quot; -o &quot;awscliv2.zip&quot; &amp;&amp; unzip awscliv2.zip &amp;&amp; ./aws/install &amp;&amp; rm awscliv2.zip &amp;&amp; rm -rf aws/
+
+ENV ENVIRONMENT=&quot;/home/environment&quot;
+RUN mkdir -p $ENVIRONMENT/input
+RUN mkdir -p $ENVIRONMENT/output
+COPY backtest.py $ENVIRONMENT/
+CMD aws s3 cp s3://$BUCKET/$PREFIX/trial_$TRIAL/input/ $ENVIRONMENT/input/ --recursive &amp;&amp; \
+    aws s3 cp s3://$BUCKET/$PREFIX/data.csv $ENVIRONMENT/data.csv &amp;&amp; \
+    python $ENVIRONMENT/backtest.py &amp;&amp; \
+    aws s3 cp $ENVIRONMENT/output/ s3://$BUCKET/$PREFIX/trial_$TRIAL/output/ --recursive
+</code></pre><ul>
+<li>遵循和之前一样的步骤构建并推送容器镜像。成功之后可以点开之前的镜像仓库页面，看到推送的镜像：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_image.png" alt=""></li>
+</ul>
+<h4 id="创建ecs-任务定义">创建 ECS 任务定义</h4>
+<ul>
+<li>代码中定义了任务需要使用的容器镜像和一些基础配置：</li>
+</ul>
+<pre><code>ecs.register_task_definition(
+    family=repository_name,
+    networkMode=&quot;awsvpc&quot;,
+    executionRoleArn=&quot;arn:aws:iam::{}:role/ecsTaskExecutionRole&quot;.format(aws_account_id),
+    containerDefinitions=[
+        {
+            &quot;name&quot;: repository_name,
+            &quot;image&quot;: &quot;{}.dkr.ecr.{}.amazonaws.com/{}&quot;.format(aws_account_id, aws_region, repository_name),
+            &quot;essential&quot;: True,
+            &quot;logConfiguration&quot;: {
+                &quot;logDriver&quot;: &quot;awslogs&quot;,
+                &quot;options&quot;: {
+                    &quot;awslogs-group&quot;: repository_name,
+                    &quot;awslogs-region&quot;: aws_region,
+                    &quot;awslogs-stream-prefix&quot;: repository_name
+                }
+            },
+        },
+    ],
+    requiresCompatibilities=[&quot;FARGATE&quot;],
+    memory=&quot;2048&quot;,
+    cpu=&quot;1024&quot;
+)
+</code></pre><ul>
+<li>
+<p>完成之后，可以导航到 ECS 控制台的 Task Definitions 界面：<a href="https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions">https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/taskDefinitions</a></p>
+</li>
+<li>
+<p>可以看到刚刚创建的任务定义：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_task_definition.png" alt=""></p>
+</li>
+<li>
+<p>创建好的任务定义有一个 Amazon 资源名称（ARN），请复制 <strong>&lsquo;taskDefinitionArn&rsquo;</strong> 的值到下一个 cell 中：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_task_definition_arn.png" alt=""></p>
+</li>
+</ul>
+<h4 id="批量运行-ecs-任务">批量运行 ECS 任务</h4>
+<ul>
+<li>
+<p>首先，导航到 CloudFormation 控制台：<a href="https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringStatus=active&amp;filteringText=&amp;viewNested=true&amp;hideStacks=false">https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks?filteringStatus=active&amp;filteringText=&amp;viewNested=true&amp;hideStacks=false</a></p>
+</li>
+<li>
+<p>在 AlgoTradingWorkshop 堆栈的 <strong>Output</strong> 页面下，寻找三个<strong>私有子网</strong>的 id 和 <strong>NoIngressSecurityGroup</strong> 的 id 复制到下一个 cell中：
+<img src="../../images/1.3.ecs_gridsearch/private_subnets.png" alt=""></p>
+</li>
+<li>
+<p>完成上述步骤之后，继续执行 Notebook 中的代码，最后就可以在 Fargate 中批量创建任务了</p>
+</li>
+<li>
+<p>执行完之后，导航到 ECS 控制台的集群界面：<a href="https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/clusters">https://us-east-1.console.aws.amazon.com/ecs/home?region=us-east-1#/clusters</a></p>
+</li>
+<li>
+<p>点击 <strong>AlgoTradingWorkshop</strong> 集群：
+<img src="../../images/1.3.ecs_gridsearch/ecs_cluster.png" alt=""></p>
+</li>
+<li>
+<p>再点击 <strong>Task</strong>，在task中可以查看到相关任务，在执行完并行计算后，任务会自动退出：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_tasks.png" alt=""></p>
+</li>
+<li>
+<p>在 CloudWatch 中也可以查看容器任务运行的日志记录：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_cloudwatch.png" alt=""></p>
+</li>
+<li>
+<p>点击刚刚生成的任意 log stream 即可查看根据策略生成的交易日志：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_cloudwatch_logs.png" alt=""></p>
+</li>
+<li>
+<p>在最后的部分，我们可以排序和热图等方式找到最优的参数组合：
+<img src="../../images/1.3.ecs_gridsearch/grid_search_result.png" alt="">
+<img src="../../images/1.3.ecs_gridsearch/grid_search_heatmap.png" alt=""></p>
+</li>
+</ul>
+
+
+<footer class=" footline" >
+	
+</footer>
+
+
+        
+        </div>
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+
+        
+
+
+        
+            <a class="nav nav-prev" href="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/1.2.backtrader_intro/" title="1.2 BackTrader 入门"> <i class="fas fa-chevron-left"></i></a>
+        
+        
+            <a class="nav nav-next" href="../../kynging/AlgoTradingWorkshop.io/1.setupplatform/1.4.sagemaker_hpo/" title="1.4 使用 SageMaker 运行超参优化" style="margin-right: 0px;"><i class="fas fa-chevron-right"></i></a>
+        
+    </div>
+
+    </section>
+
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/clipboard.min.js?1628348615"></script>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/perfect-scrollbar.min.js?1628348615"></script>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/perfect-scrollbar.jquery.min.js?1628348615"></script>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/jquery.sticky.js?1628348615"></script>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/featherlight.min.js?1628348615"></script>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/highlight.pack.js?1628348615"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/modernizr.custom-3.6.0.js?1628348615"></script>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/learn.js?1628348615"></script>
+    <script src="../../kynging/AlgoTradingWorkshop.io/js/hugo-learn.js?1628348615"></script>
+
+    <link href="../../kynging/AlgoTradingWorkshop.io/mermaid/mermaid.css?1628348615" type="text/css" rel="stylesheet" />
+    <script src="../../kynging/AlgoTradingWorkshop.io/mermaid/mermaid.min.js?1628348615"></script>
+    <script>
+	var config = {
+        startOnLoad:true,
+        flowchart:{
+	    curve:'basis'
+        }
+      };
+        mermaid.initialize(config);
+    </script>
+    
+
+  </body>
+</html>
+

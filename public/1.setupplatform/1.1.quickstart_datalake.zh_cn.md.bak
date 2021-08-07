@@ -1,0 +1,198 @@
+---
+title: "1.1 快速创建金融数据湖"
+chapter: false
+weight: 1
+---
+
+## 快速创建金融数据湖
+
+{{% notice note %}}
+本实验建议在 us-east-1 区域进行。
+{{% /notice  %}}
+
+（此处应有架构图）
+
+在开始之前，在 Notebook 中执行以下代码拷贝数据表：
+```
+my_name = 'xxx'
+aws_region = 'us-east-1'
+bucket = 'algo-trading-workshop-{}'.format(my_name)
+table = 'stock_day'
+database = 'stock-data'
+
+!aws s3 cp s3://stock-public-data/{table}.csv s3://{bucket}/raw/{table}.csv --request-payer requester --region {aws_region}
+```
+
+**这个部分介绍如何使用 Glue 和 Athena 来快速进行数据 ELT**
+
+通过 Glue 控制台创建 Glue 爬虫以及 ETL 任务（选项一）
+1. 通过 Glue 控制台创建 Glue 爬虫
+- 创建AWS Glue Crawler，在AWS Glue下选择Crawlers， Add crawler
+
+![](/images/1.1.catalog_glue/002.png)
+- 填写Crwaler name
+
+![](/images/1.1.catalog_glue/003.png)
+- Crawler type resource选择Data Stores，Crawler all folders
+
+![](/images/1.1.catalog_glue/004.png)
+- Data store选择s3，Crawl data路径选择my account，include path选择之前拷贝stock_day对应的s3路径
+
+![](/images/1.1.catalog_glue/005.png)
+- 不需添加另外的data store
+
+![](/images/1.1.catalog_glue/006.png)
+- 创建一个IAM role，填上自己的名字。稍后修改IAM Role关联的策略
+
+![](/images/1.1.catalog_glue/007.png)
+- 选择按需执行
+
+![](/images/1.1.catalog_glue/008.png)
+- 添加一个database
+
+![](/images/1.1.catalog_glue/009.png)
+- 命名为stock-data
+
+![](/images/1.1.catalog_glue/010.png)
+- 可以看到Database下已经选中stock-data，下一步
+
+![](/images/1.1.catalog_glue/011.png)
+- 预览下之前的配置
+
+![](/images/1.1.catalog_glue/012.png)
+- 在AWS Console选择IAM，选中Role，搜索刚才命名的Role name，点击AWSGlueServiceRole-xxx
+
+![](/images/1.1.catalog_glue/013.png)
+- 可以看到这个Role name下已经关联了AWSGlueServiceRole，点击Attach polices
+
+![](/images/1.1.catalog_glue/014.png)
+- 找到AmazonS3FullAccess，并Attach policy
+
+![](/images/1.1.catalog_glue/015.png)
+- 可以看到Attach policy下已经做了访问s3策略的关联
+
+![](/images/1.1.catalog_glue/016.png)
+- 回到AWS Glue页面，选择Crawlers，选中刚才创建的AnalyticsworkshopCrawler，点击Run crawler
+
+![](/images/1.1.catalog_glue/017.png)
+- 可以看到作业已经完成，并创stock-data建创了一个表
+
+![](/images/1.1.catalog_glue/018.png)
+- 可以在Database下Tables中查看该表，单击stock_day_csv
+
+![](/images/1.1.catalog_glue/019.png)
+- 可以看到表的Schema
+
+![](/images/1.1.catalog_glue/020.png)
+2. 通过 Glue 控制台创建 ETL 任务
+- 在AWS Glue下点击Jobs，选择Add job
+
+![](/images/1.1.etl_glue/101.png)
+- Name下填写transform，IAM Role选择之前创建的AdAWSGlueServiceRole-xxx；Glue version选择Spark 2.4 （Glue version 2.0）
+
+![](/images/1.1.etl_glue/102.png)
+- 选择data source为stock_day_csv
+
+![](/images/1.1.etl_glue/103.png)
+- 选择一个transform type，为Change Schema
+
+![](/images/1.1.etl_glue/104.png)
+- data target选择源为s3，format为parquet，target path为新建的s3://algo-trading-workshop-xxx/parquet目录
+
+![](/images/1.1.etl_glue/105.png)
+- 可以看到源和目标的数据类型，此处不做修改
+
+![](/images/1.1.etl_glue/106.png)
+- 此处为Glue job自动生成的脚本，不做修改，Run job
+
+![](/images/1.1.etl_glue/107.png)
+- 参数不做修改，直接Run job
+
+![](/images/1.1.etl_glue/108.png)
+- 回到AWS Glue下job界面，选择刚才运行的Glue job，可以看到作业已经在运行
+
+![](/images/1.1.etl_glue/109.png)
+- 直到作业运行完成，可以看到执行的时间和状态，在s3://algo-trading-workshop-xxx/parquet下查看刚才转换完成的数据集
+
+![](/images/1.1.etl_glue/110.png)
+通过 Athena 控制台直接建表并进行 ETL（选项二）
+- 使用Athena前，必须设置查询结果的地址，如图示，在s3下新建一个目录。在Athena右上方点击Settings，并选中这个路径
+
+![](/images/1.1.etl_athena/301.png)
+- 创建外部表的SQL语句
+```
+CREATE EXTERNAL TABLE IF NOT EXISTS stock_day_raw (
+  ticker string,
+  secID string,
+  tradeDate string,
+  openPrice double,
+  highestPrice double,
+  lowestPrice double,
+  closePrice double,
+  turnoverVol double,
+  turnoverValue double,
+  accumAdjFactor double,
+  isOpen boolean
+)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+LOCATION 's3://algo-trading-workshop-xxx/raw'
+TBLPROPERTIES ('skip.header.line.count'='1');
+```
+- 输入上方SQL语句，Run query，可以看到左侧新生成的stock_day_raw
+
+![](/images/1.1.etl_athena/302.png)
+- 从已有表创建外部表的SQL语句
+```
+CREATE EXTERNAL TABLE IF NOT EXISTS stock_day (
+  ticker string,
+  secID string,
+  tradedate string,
+  openPrice double,
+  highestPrice double,
+  lowestPrice double,
+  closePrice double,
+  turnoverVol double,
+  turnoverValue double,
+  accumAdjFactor double,
+  isOpen boolean
+)
+STORED AS parquet
+LOCATION 's3://algo-trading-workshop-xxx/parquet'
+```
+- 输入上方SQL语句，Run query，可以看到左侧新生成的stock_day
+
+![](/images/1.1.etl_athena/303.png)
+- 查询表的字段
+```
+INSERT INTO stock_day
+SELECT *
+FROM stock_day_raw;
+```
+使用 Glue DataBrew 进行操作（选项三，可选）
+- 在AWS Console中搜索databrew，打开AWS Glue DataBrew，create project
+
+![](/images/1.1.glue_databrew/401.png)
+- 输入Project name为GlueDataBrew；选择New dataset；Dataset name为raw-dataset
+
+![](/images/1.1.glue_databrew/402.png)
+- 左侧导航栏选择All AWS Glue tables，并在右侧选择之前创建的Database-->stock-data
+
+![](/images/1.1.glue_databrew/403.png)
+- 点击stock-data
+
+![](/images/1.1.glue_databrew/404.png)
+- 创建IAM Role，输入命名前缀GlueDataBrew
+
+![](/images/1.1.glue_databrew/405.png)
+- 初始化会话
+
+![](/images/1.1.glue_databrew/406.png)
+- 创建Glue DataBrew会话后，可以看到下面的图例：
+
+![](/images/1.1.glue_databrew/407.png)
+- 单击屏幕右上角的SCHEMA选项，浏览表架构及其属性，例如列名、数据类型、数据质量、值分布
+
+![](/images/1.1.glue_databrew/408.png)
+单击 GRID 选项卡返回到网格视图
+         我们将更改 track_id 数据类型，通过单击 track_id 列中的 #，并选择字符串类型，如下面的屏幕截图所示 
+         

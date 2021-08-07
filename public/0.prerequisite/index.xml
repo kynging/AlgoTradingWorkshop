@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>0. 准备工作 on 算法交易 Workshop</title>
+    <link>https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/</link>
+    <description>Recent content in 0. 准备工作 on 算法交易 Workshop</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh_cn</language><atom:link href="https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>0.1 部署云端基础环境</title>
+      <link>https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.1.vpc_sagemaker_basics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.1.vpc_sagemaker_basics/</guid>
+      <description>部署云端基础环境 本实验建议在 us-east-1 区域进行。
+在这个环节中，我们将通过预先准备好的 CloudFormation 模板创建实验的基础网络环境和实验资源。AWS CloudFormation 是一种“基础设施即代码”，提供一种简单的方式，对一系列 AWS 资源进行建模，快速而又一致地对这些资源进行预置。
+请通过以下链接下载本实验使用的 CloudFormation 模板至本地环境：template.yaml。这个模板里面主要包含了 VPC、SageMaker Notebook。CloudFormation 包含的详细内容包括：
+ 创建跨三个不同的 AZ 的 VPC 创建的 VPC 在每个 AZ 都包含 public、private、isolated 三个子网 公有（public）子网：  该子网内的资源会暴露在互联网上，可被用户或客户端直接访问。通常用于部署 NAT Gateway, 堡垒机，ELB 负载均衡器等；   私有子网：  该子网内的资源不能被用户或客户端直接访问，但可以通过 NAT Gateway 单向访问公网。通常用于部署业务服务器、容器集群、大数据集群等；   数据库子网：  该子网内的资源不能被用户或客户端直接访问，也不能访问公网。通常仅用于部署对安全要求最高的数据库等。   SageMaker Notebook 实例 用于 SageMaker Notebook 和其他托管服务使用的 IAM 角色  实验步骤 首先，导航到 CloudFormation 控制台，部署刚刚下载的模板：
+  通过此链接直接导航到 CloudFormation 控制台创建新堆栈的界面：https://console.</description>
+    </item>
+    
+    <item>
+      <title>0.2 通过 AWS 控制台创建 S3 存储桶和 ECS 集群（选项一）</title>
+      <link>https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.2.aws_console/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.2.aws_console/</guid>
+      <description>通过 AWS 控制台创建 S3 存储桶和 ECS 集群 本实验建议在 us-east-1 区域进行。
+在这个环节中，我们将创建实验基础的 S3 存储桶和 ECS 集群。
+创建 S3 存储桶 我们先创建一个 S3 存储桶用于存储实验数据，以及实验过程中产生的文件。
+  通过以下链接导航到 S3 控制台：https://s3.console.aws.amazon.com/s3/home?region=us-east-1
+  点击右侧的 Create Bucket：   输入存储桶名称为 algo-trading-workshop-您的名字简称，并确保区域名为 us-east-1：   创建成功后可以在控制台中看到新的存储桶：   创建 ECS 集群 接下来我们创建一个 ECS 集群。
+  通过以下链接导航到 ECS 控制台：https://console.aws.amazon.com/ecs/home?region=us-east-1#/clusters
+  点击 Create Cluster：   在下一步中保持默认，点击 Next step：   输入集群名称 algo-trading-workshop，点击 Create：   创建成功后可以在控制台中看到新的 ECS 集群：   </description>
+    </item>
+    
+    <item>
+      <title>0.3 使用 AWS SDK 创建 S3 存储桶和 ECS 集群（选项二）</title>
+      <link>https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.3.aws_sdk/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://github.com/kynging/AlgoTradingWorkshop.io/0.prerequisite/0.3.aws_sdk/</guid>
+      <description>使用 AWS SDK 创建 S3 存储桶和 ECS 集群 本实验建议在 us-east-1 区域进行。
+创建 Notebook 在这一步中，我们将导航到 SageMaker 控制台在新创建的 Notebook 中运行 AWS SDK 的简单代码。
+登录 AWS 控制台，并在 us-east-1 区域打开之前创建的 SageMaker Notebook：
+ 跳转到 SageMaker 控制台：https://us-east-1.console.aws.amazon.com/sagemaker/home?region=us-east-1#/ 单击左侧的 Notebook，然后点击 Notebook instances 在右侧的 Notebook instances 界面，找到名为 AlgoTradingWorkshop 的 SageMaker Notebook 实例，并点击 Open JupyterLab：   控制台将会跳转到 JupyterLab 界面，在 JupyterLab 中创建一个新的 Notebook：
+  点击左上角的 + 按钮，这时会显示右侧的 Launcher
+  在 Launcher 中选择 conda_python3 内核   点击保存按钮，并重命名这个 notebook 为 aws_sdk.</description>
+    </item>
+    
+  </channel>
+</rss>
