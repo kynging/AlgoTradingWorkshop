@@ -8,8 +8,7 @@ weight: 2
 本实验建议在 us-east-1 区域进行。
 {{% /notice  %}}
 
-（此处应有架构图）
-![](/images/0.3.aws_sdk/)
+![](/images/1.architecture.png)
 
 在这个部分，我们将体验在量化开发中使用 AWS 大数据服务和容器服务。这包括：
 
