@@ -5,6 +5,7 @@ defaultContentLanguage = "zh_cn"
 title = "Algo Trading Workshop"
 theme = "learn"
 uglyurls = false
+refLinksErrorLevel = "WARNING"
 sectionPagesMenu = "main"
 relativeURLs = true
 
